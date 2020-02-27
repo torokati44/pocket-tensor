@@ -23,6 +23,8 @@
 #include "pt_global_max_pooling_2d_layer.h"
 #include "pt_repeat_vector_layer.h"
 #include "pt_input_layer.h"
+#include "pt_average_pooling_1d_layer.h"
+#include "pt_global_average_pooling_1d_layer.h"
 
 namespace pt
 {
@@ -45,7 +47,9 @@ namespace
         LeakyRelu = 13,
         GlobalMaxPooling2D = 14,
         Input = 15,
-        RepeatVector = 16
+        RepeatVector = 16,
+        AveragePooling1D = 17,
+        GlobalAveragePooling1D = 18,
     };
 }
 
@@ -122,6 +126,14 @@ std::unique_ptr<Layer> Layer::create(std::istream& stream)
 
     case RepeatVector:
         layer = RepeatVectorLayer::create(stream);
+        break;
+
+    case AveragePooling1D:
+        layer = AveragePooling1DLayer::create(stream);
+        break;
+
+    case GlobalAveragePooling1D:
+        layer = GlobalAveragePooling1DLayer::create(stream);
         break;
 
     default:

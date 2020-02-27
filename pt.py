@@ -16,6 +16,8 @@ LAYER_LEAKY_RELU = 13
 LAYER_GLOBAL_MAXPOOLING_2D = 14
 LAYER_INPUT = 15
 LAYER_REPEAT_VECTOR = 16
+LAYER_AVERAGEPOOLING_1D = 17
+LAYER_GLOBAL_AVERAGEPOOLING_1D = 18
 
 ACTIVATION_LINEAR = 1
 ACTIVATION_RELU = 2
@@ -160,6 +162,13 @@ def export_layer_maxpooling2d(f, layer):
     f.write(struct.pack('I', pool_size[1]))
 
 
+def export_layer_averagepooling1d(f, layer):
+    pool_size = layer.get_config()['pool_size']
+
+    f.write(struct.pack('I', LAYER_AVERAGEPOOLING_1D))
+    f.write(struct.pack('I', pool_size[0]))
+
+
 def export_layer_lstm(f, layer):
     inner_activation = layer.get_config()['recurrent_activation']
     activation = layer.get_config()['activation']
@@ -273,6 +282,12 @@ def export_model(model, filename):
                 f.write(struct.pack('I', LAYER_REPEAT_VECTOR))
                 n = layer.get_config()['n']
                 f.write(struct.pack('I', n))
+
+            elif layer_type == 'AveragePooling1D':
+                export_layer_averagepooling1d(f, layer)
+
+            elif layer_type == 'GlobalAveragePooling1D':
+                f.write(struct.pack('I', LAYER_GLOBAL_AVERAGEPOOLING_1D))
 
             else:
                 assert False, "Unsupported layer type: %s" % layer_type
