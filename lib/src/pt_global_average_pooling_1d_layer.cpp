@@ -45,19 +45,20 @@ namespace
                     taskEnd = taskBegin + taskIts;
                 }
 
-                auto l = iw[0];
+                auto xl = iw[0];
 
                 for(std::size_t z = taskBegin; z != taskEnd; ++z)
                 {
                     Tensor::Type val = 0;
 
-                    for(std::size_t i = 0; i != l; ++i)
+                    for(std::size_t x = 0; x != xl; ++x)
                     {
-                        val += in(i, z);
+                        val += in(x, z));
                     }
 
-                    out(z) = val / l;
+                    out(z) = val / iw[0];
                 }
+
             }
         };
 
@@ -90,6 +91,12 @@ bool GlobalAveragePooling1DLayer::apply(LayerData& layerData) const
     {
         PT_LOG_ERROR << "Input tensor dims count must be 2" <<
                             " (input dims: " << VectorPrinter<std::size_t>{ iw } << ")" << std::endl;
+        return false;
+    }
+
+    if(iw[1] != 1)
+    {
+        PT_LOG_ERROR << "Input dimension 2 must be 1" << std::endl;
         return false;
     }
 

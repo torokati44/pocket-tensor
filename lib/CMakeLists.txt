@@ -20,6 +20,8 @@ set(SOURCES
     src/pt_global_max_pooling_2d_layer.cpp
     src/pt_repeat_vector_layer.cpp
     src/pt_model.cpp
+    src/pt_average_pooling_1d_layer.cpp
+    src/pt_global_average_pooling_1d_layer.cpp
 )
 
 # Add a library with the above sources:

@@ -25,7 +25,7 @@ protected:
     int _poolSize;
 
     AveragePooling1DLayer(int poolSize) noexcept :
-        _poolSizeY(poolSize)
+        _poolSize(poolSize)
     {
     }
 };

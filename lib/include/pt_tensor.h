@@ -72,6 +72,11 @@ public:
         return _data;
     }
 
+    DataVector& getData() noexcept
+    {
+        return _data;
+    }
+
     Type operator()(std::size_t i) const noexcept
     {
         return const_cast<Tensor&>(*this).operator()(i);

@@ -41,8 +41,7 @@ namespace
                 auto outInc = outInc2 * int(ow[0]);
 
                 auto inData = in.getData().data();
-                auto outData = const_cast<Tensor::Type*>(out.getData().data());
-                AddType sum;
+                auto outData = out.getData().data();
 
                 int its = outInc / outInc2;
                 int taskIts = its / threads;
@@ -59,24 +58,14 @@ namespace
                 }
 
                 inData += taskIts * taskId;
+                outData += taskIts * taskId / poolSize;
 
-                for(auto outIt = outData + (taskBegin * outInc2), outEnd = outData + (taskEnd * outInc2);
-                    outIt != outEnd; outIt += outInc2)
-                {
-                    auto inIt = inData;
-
-                    for(auto outIt2 = outIt, outEnd2 = outIt + outInc2; outIt2 != outEnd2; outIt2 += inInc2)
-                    {
-                        for(auto inIt3 = inIt, inEnd3 = inIt + inInc; inIt3 != inEnd3; inIt3 += inInc2)
-                        {
-                            add(&*inIt3, &*outIt2, inInc2);
-                        }
-
-                        inIt += inInc;
-                    }
+                for (int i = 0; i < taskIts; ++i) {
+                    outData[i] = 0;
+                    for (int j = 0; j < poolSize; ++j)
+                        outData[i] += inData[poolSize*i + j];
+                    outData[i] /= poolSize;
                 }
-
-                // TODO divide by poolSize (and check the above)
             }
         };
 
@@ -120,7 +109,14 @@ bool AveragePooling1DLayer::apply(LayerData& layerData) const
         return false;
     }
 
+    if(iw[1] != 2)
+    {
+        PT_LOG_ERROR << "There must be a single feature (second dimension should be 1)" << std::endl;
+        return false;
+    }
+
     Tensor& out = layerData.out;
+    // (steps, features)
     out.resize(iw[0] / std::size_t(_poolSize), iw[1]);
     out.fill(-std::numeric_limits<Tensor::Type>::infinity());
 
